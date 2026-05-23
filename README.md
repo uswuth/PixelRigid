@@ -1,72 +1,116 @@
-![PixelRigid](./PixelRigid.png)
+<p align="center">
+  <img src="./PixelRigid.png" alt="PixelRigid" width="160" />
+</p>
 
-> Force square/sharp window corners on Windows 11 — system-wide, silent, zero CPU.
+<p align="center">
+  Force sharp window corners on Windows 11.
+</p>
 
-Windows 11 rounds every window corner by default. Pixel Rigid removes that globally, instantly, with no polling loop.
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-Windows%2011-0078D6?style=flat-square" />
+  <img src="https://img.shields.io/badge/.NET-4.8-512BD4?style=flat-square" />
+  <img src="https://img.shields.io/badge/CPU-0%25%20Idle-black?style=flat-square" />
+  <img src="https://img.shields.io/github/license/uswuth/PixelRigid?style=flat-square" />
+  <img src="https://img.shields.io/github/stars/uswuth/PixelRigid?style=flat-square" />
+</p>
+
+---
+
+## Preview
+
+<p align="center">
+  <img src="./preview-1.png" width="32%" />
+  <img src="./preview-2.png" width="32%" />
+  <img src="./preview-3.png" width="32%" />
+</p>
+
+---
+
+## Overview
+
+Windows 11 rounds window corners by default.
+
+PixelRigid removes them system-wide using native Windows DWM APIs and Win32 event hooks.
+
+No polling loop.  
+No background CPU usage.  
+Runs silently in the tray.
 
 ---
 
 ## Features
 
-- **Event-driven** — uses `WinEventHook`, not a polling loop. CPU usage is literally 0% when idle
-- **System windows too** — Task Manager, Settings, and other elevated windows are covered (runs as admin)
-- **System tray** — lives quietly in your tray; left-click to pause/resume, right-click for menu
-- **Run at startup** — one checkbox in the tray menu writes to your registry run key
-- **No runtime needed** — targets .NET 4.8 which ships with every Windows 10/11 install
-- **Tiny** — single `.exe`, ~50 KB
+- Sharp corners system-wide
+- Event-driven architecture
+- 0% CPU usage while idle
+- Works on elevated/system windows
+- Tray controls
+- Startup toggle
+- Single lightweight executable
 
 ---
 
-## Download
+## How It Works
 
-Grab the latest `Pixel Rigid.exe` from [Releases](../../releases).
+PixelRigid listens for newly created or focused windows using `WinEventHook`.
+
+When detected, it applies:
+
+```cpp
+DwmSetWindowAttribute(
+    hwnd,
+    DWMWA_WINDOW_CORNER_PREFERENCE,
+    DWMWCP_DONOTROUND
+);
+```
+
+This is handled entirely through native Windows APIs.
 
 ---
 
-## Build from source
+## Installation
 
-Requirements: [.NET SDK 6+](https://dotnet.microsoft.com/download) (only needed to build; the output runs on .NET 4.8)
+Download the latest build from:
+
+[Releases](../../releases)
+
+---
+
+## Build
 
 ```bash
-git clone https://github.com/uswuth/PixelRigid
+git clone https://github.com/uswuth/PixelRigid.git
 cd PixelRigid
 dotnet publish -c Release
 ```
 
-Output: `bin\Release\net48\PixelRigid.exe`
+Output:
+
+```txt
+bin\Release\net48\PixelRigid.exe
+```
 
 ---
 
 ## Usage
 
-1. Run `Pixel Rigid.exe` — UAC will prompt once for admin rights (needed for system windows)
-2. The app hides to your system tray immediately
-3. **Left-click** the tray icon to pause/resume
-4. **Right-click** for options including _Run at startup_ and _Exit_
+- Launch `PixelRigid.exe`
+- Accept the UAC prompt
+- App minimizes to the tray automatically
+
+### Tray Controls
+
+| Action         | Result         |
+| -------------- | -------------- |
+| Left Click     | Pause / Resume |
+| Right Click    | Menu           |
+| Startup Toggle | Run at startup |
+| Exit           | Close app      |
 
 ---
 
-## How it works
+## Third-Party Notice
 
-Windows 11 exposes a DWM (Desktop Window Manager) API — `DwmSetWindowAttribute` with `DWMWA_WINDOW_CORNER_PREFERENCE` — that controls per-window corner rounding. Pixel Rigid installs two `WinEventHook` listeners:
+PixelRigid uses standard Windows APIs provided by Microsoft Windows.
 
-| Event                     | When                   |
-| ------------------------- | ---------------------- |
-| `EVENT_OBJECT_SHOW`       | A window first appears |
-| `EVENT_SYSTEM_FOREGROUND` | A window gains focus   |
-
-On each event it calls `DwmSetWindowAttribute(hwnd, 33, DWMWCP_DONOTROUND, 4)`.
-The hook thread blocks in a Win32 `GetMessage` loop — zero CPU when nothing is happening.
-
----
-
-## Why admin?
-
-Task Manager, UAC dialogs, and other system processes run at a higher integrity level. Without admin rights, `DwmSetWindowAttribute` silently fails on them. Pixel Rigid requests `requireAdministrator` in its manifest and enables `SeDebugPrivilege` at startup to reach all windows.
-
----
-
-## Credits
-
-- Built for Windows 11 customization
-- Uses standard Windows APIs provided by Microsoft
+Microsoft and Windows are trademarks of Microsoft Corporation.
