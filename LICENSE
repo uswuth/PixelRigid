@@ -1,0 +1,36 @@
+# PixelRigid License v1.0
+
+Copyright (c) 2026 Aswath S
+
+Permission is granted to use, study, modify, and distribute this software for personal and non-commercial purposes, subject to the following conditions:
+
+## Allowed
+
+- Forking the repository
+- Modifying the source code
+- Creating plugins, patches, or companion tools
+- Using parts of the source code in personal or educational projects
+- Publishing improvements with proper attribution
+
+## Required
+
+- Original author credit must remain visible in:
+  - Repository credits
+  - License files
+  - Source attribution notices
+- Any modified version must mention:
+  - "Based on PixelRigid by Aswath S"
+  - Link to the original repository
+
+## Not Allowed
+
+- Selling this software or modified versions
+- Rebranding or renaming the project as an original work
+- Removing author credits or attribution
+- Adding telemetry, tracking, ads, or hidden network activity
+- Redistributing closed-source versions of this project
+
+## Disclaimer
+
+This software is provided "as is", without warranty of any kind.
+The author is not responsible for any damage or issues caused by usage of the software.
