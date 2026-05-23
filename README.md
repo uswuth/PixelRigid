@@ -18,9 +18,8 @@
 ## Preview
 
 <p align="center">
-  <img src="./preview-1.png" width="32%" />
-  <img src="./preview-2.png" width="32%" />
-  <img src="./preview-3.png" width="32%" />
+  <img src="./preview-1.png" width="80%" />
+
 </p>
 
 ---
