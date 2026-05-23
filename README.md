@@ -10,7 +10,6 @@
   <img src="https://img.shields.io/badge/platform-Windows%2011-0078D6?style=flat-square" />
   <img src="https://img.shields.io/badge/.NET-4.8-512BD4?style=flat-square" />
   <img src="https://img.shields.io/badge/CPU-0%25%20Idle-black?style=flat-square" />
-  <img src="https://img.shields.io/github/license/uswuth/PixelRigid?style=flat-square" />
   <img src="https://img.shields.io/github/stars/uswuth/PixelRigid?style=flat-square" />
 </p>
 
