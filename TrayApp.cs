@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using System.Security.Principal;
 
 namespace SharpCorners
 {
@@ -14,14 +15,13 @@ namespace SharpCorners
         private bool _active = true;
 
         private const string AppName   = "PixelRigid";
-        private const string RegRunKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+        private const string TaskName  = "PixelRigid_Autostart";
 
         public TrayApp()
         {
             _engine = new HookEngine();
             _engine.StatusChanged += s => UpdateTrayText();
 
-            // ── Context menu ─────────────────────────────────────────────────
             _toggleItem = new ToolStripMenuItem("● Active (click to pause)", null, OnToggle)
             {
                 Font = new Font("Segoe UI", 9f, FontStyle.Bold)
@@ -35,7 +35,7 @@ namespace SharpCorners
                     "PixelRigid v1.0\n\n" +
                     "Forces square/sharp window corners on Windows 11.\n" +
                     "Event-driven — zero CPU usage when idle.\n\n" +
-                    "github.com/yourusername/PixelRigid",
+                    "github.com/uswuth/PixelRigid",
                     "PixelRigid", MessageBoxButtons.OK, MessageBoxIcon.Information));
 
             var exitItem = new ToolStripMenuItem("Exit", null, OnExit);
@@ -48,7 +48,6 @@ namespace SharpCorners
             menu.Items.Add(new ToolStripSeparator());
             menu.Items.Add(exitItem);
 
-            // ── Tray icon ────────────────────────────────────────────────────
             _tray = new NotifyIcon
             {
                 Text             = "PixelRigid — Active",
@@ -56,7 +55,6 @@ namespace SharpCorners
                 Visible          = true
             };
 
-            // Use the exe's own icon (set via <ApplicationIcon> in .csproj)
             _tray.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
             _tray.MouseClick += (s, e) =>
@@ -67,7 +65,6 @@ namespace SharpCorners
             _engine.Start();
         }
 
-        // ── Toggle on/off ─────────────────────────────────────────────────────
         private void OnToggle(object s, EventArgs e)
         {
             _active = !_active;
@@ -76,34 +73,109 @@ namespace SharpCorners
             UpdateTrayText();
         }
 
-        // ── Update tray tooltip + menu label ──────────────────────────────────
         private void UpdateTrayText()
         {
             if (_tray == null) return;
-            _tray.Text         = _active ? "PixelRigid — Active" : "PixelRigid — Paused";
-            _toggleItem.Text   = _active ? "● Active (click to pause)" : "○ Paused (click to resume)";
+            _tray.Text       = _active ? "PixelRigid — Active" : "PixelRigid — Paused";
+            _toggleItem.Text = _active ? "● Active (click to pause)" : "○ Paused (click to resume)";
         }
 
-        // ── Autostart via registry ────────────────────────────────────────────
+        // ── Autostart via Task Scheduler (works with requireAdministrator) ────
         private void OnAutostart(object s, EventArgs e)
         {
             _autostartItem.Checked = !_autostartItem.Checked;
-            using (var key = Registry.CurrentUser.OpenSubKey(RegRunKey, true))
+
+            if (_autostartItem.Checked)
+                RegisterScheduledTask();
+            else
+                RemoveScheduledTask();
+        }
+
+        private void RegisterScheduledTask()
+        {
+            // schtasks creates an elevated task that runs at login — no UAC popup
+            string exe = Application.ExecutablePath;
+            string xml = $@"<?xml version=""1.0"" encoding=""UTF-16""?>
+<Task version=""1.2"" xmlns=""http://schemas.microsoft.com/windows/2004/02/mit/task"">
+  <Triggers>
+    <LogonTrigger>
+      <Enabled>true</Enabled>
+    </LogonTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id=""Author"">
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>HighestAvailable</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
+    <Priority>7</Priority>
+  </Settings>
+  <Actions>
+    <Exec>
+      <Command>{exe}</Command>
+    </Exec>
+  </Actions>
+</Task>";
+
+            // Write XML to temp file and import via schtasks
+            string tmp = System.IO.Path.GetTempFileName() + ".xml";
+            System.IO.File.WriteAllText(tmp, xml, System.Text.Encoding.Unicode);
+
+            var psi = new System.Diagnostics.ProcessStartInfo
             {
-                if (_autostartItem.Checked)
-                    key.SetValue(AppName, $"\"{Application.ExecutablePath}\"");
-                else
-                    key.DeleteValue(AppName, false);
-            }
+                FileName        = "schtasks.exe",
+                Arguments       = $"/Create /TN \"{TaskName}\" /XML \"{tmp}\" /F",
+                UseShellExecute = false,
+                CreateNoWindow  = true
+            };
+
+            using (var p = System.Diagnostics.Process.Start(psi))
+                p.WaitForExit();
+
+            System.IO.File.Delete(tmp);
+        }
+
+        private void RemoveScheduledTask()
+        {
+            var psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName        = "schtasks.exe",
+                Arguments       = $"/Delete /TN \"{TaskName}\" /F",
+                UseShellExecute = false,
+                CreateNoWindow  = true
+            };
+
+            using (var p = System.Diagnostics.Process.Start(psi))
+                p.WaitForExit();
         }
 
         private bool IsAutostartEnabled()
         {
-            using (var key = Registry.CurrentUser.OpenSubKey(RegRunKey, false))
-                return key?.GetValue(AppName) != null;
+            var psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName               = "schtasks.exe",
+                Arguments              = $"/Query /TN \"{TaskName}\"",
+                UseShellExecute        = false,
+                CreateNoWindow         = true,
+                RedirectStandardOutput = true
+            };
+
+            try
+            {
+                using (var p = System.Diagnostics.Process.Start(psi))
+                {
+                    p.WaitForExit();
+                    return p.ExitCode == 0;
+                }
+            }
+            catch { return false; }
         }
 
-        // ── Exit ──────────────────────────────────────────────────────────────
         private void OnExit(object s, EventArgs e)
         {
             _engine.Dispose();
