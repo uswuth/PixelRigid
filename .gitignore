@@ -6,3 +6,4 @@ obj/
 *.rsuser
 .idea/
 *.log
+.vscode/settings.json
