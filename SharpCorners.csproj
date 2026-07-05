@@ -6,10 +6,11 @@
     <AssemblyName>PixelRigid</AssemblyName>
     <RootNamespace>PixelRigid</RootNamespace>
     <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
     <Optimize>true</Optimize>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Icons\Light\pixelrigid-light-mode.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -22,7 +23,7 @@
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Drawing" />
-    <Content Include="icon.ico" />
+    <Content Include="Resources\Icons\Light\pixelrigid-light-mode.ico" />
   </ItemGroup>
 
 </Project>

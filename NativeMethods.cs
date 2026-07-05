@@ -7,7 +7,6 @@ namespace SharpCorners
     {
         // ── DWM ──────────────────────────────────────────────────────────────
         public const int  DWMWA_WINDOW_CORNER_PREFERENCE = 33;
-        public const int  DWMWCP_DEFAULT    = 0;
         public const int  DWMWCP_DONOTROUND = 1;
 
         [DllImport("dwmapi.dll")]

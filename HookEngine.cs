@@ -15,8 +15,6 @@ namespace SharpCorners
         private NativeMethods.WinEventProc  _proc;   // keep-alive ref
         private volatile bool               _running;
 
-        public bool IsRunning => _running;
-
         // Raised on the hook thread — just for status updates to the UI
         public event Action<string> StatusChanged;
 

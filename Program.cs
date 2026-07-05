@@ -1,7 +1,8 @@
 using System;
 using System.Windows.Forms;
+using PixelRigid.UI;
 
-namespace SharpCorners
+namespace PixelRigid
 {
     static class Program
     {
@@ -20,7 +21,8 @@ namespace SharpCorners
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new TrayApp());
+
+            Application.Run(new MainTray());
 
             GC.KeepAlive(mutex);
         }
