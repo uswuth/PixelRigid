@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-The lightweight utility for removing rounded corners from Windows 11.
+  The lightweight utility for removing rounded corners from Windows 11.
 </p>
 
 <p align="center">
