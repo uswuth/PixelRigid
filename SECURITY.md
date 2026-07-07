@@ -15,24 +15,17 @@ PixelRigid is an actively developed project. Only the latest release receives se
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in PixelRigid, please report it privately instead of opening a public issue.
+Please do not report security vulnerabilities through public GitHub issues.
 
-### How to Report
-
-Use one of the following methods:
-
-- **GitHub Security Advisories** (preferred)
-- **GitHub Private Vulnerability Report**
-- Contact the maintainer directly if instructed in the repository.
+Instead, use GitHub's **Private Vulnerability Reporting** feature to submit the report. This allows the issue to be investigated and fixed before public disclosure.
 
 Please include:
 
-- A detailed description of the vulnerability
+- A description of the issue
 - Steps to reproduce
 - Windows version
 - PixelRigid version
-- Screenshots or logs (if applicable)
-- Proof-of-concept code (if available)
+- Any relevant logs or screenshots
 
 ---
 
