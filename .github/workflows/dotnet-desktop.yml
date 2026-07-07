@@ -19,15 +19,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x  
-          
-      - name: Cache NuGet Packages
-        uses: actions/cache@v4
-        with:
-        path: C:\Users\runneradmin\.nuget\packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
+          dotnet-version: '8.0.x'
 
       - name: Restore Dependencies
         run: dotnet restore SharpCorners.csproj
