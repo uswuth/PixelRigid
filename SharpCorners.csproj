@@ -11,6 +11,10 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Resources\Icons\Light\pixelrigid-light-mode.ico</ApplicationIcon>
+    <Company>PixelRigid</Company>
+    <Copyright>Copyright © 2026 PixelRigid</Copyright>
+    <Description>PixelRigid - Automatically applies non rounded corners to Windows application windows</Description>
+    <Product>PixelRigid</Product>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
